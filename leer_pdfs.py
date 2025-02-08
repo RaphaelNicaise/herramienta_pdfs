@@ -3,13 +3,18 @@ from tkinter import messagebox, filedialog
 import PyPDF2
 
 from pdf import PDF
-        
+            
         
 def merge_pdfs():
     """Merge all the PDFs in the list"""
-    merger = PyPDF2.PdfFileMerger()
+    merger = PyPDF2.PdfMerger()
+    
+    if not PDF.pdfs:
+        messagebox.showerror("Error", "No hay PDFs para unir")
+        return
+    
     for pdf in PDF.pdfs:
-        merger.append(PyPDF2.PdfFileReader(pdf.path))
+        merger.append(PyPDF2.PdfReader(pdf.path))
     try:
         merger.write(file_name := filedialog.asksaveasfilename(filetypes=[("PDF files", "*.pdf")], defaultextension=".pdf"))
         messagebox.showinfo("Info", "PDFs merged successfully")
@@ -47,6 +52,11 @@ button_open.pack(pady=20)
 listbox = tk.Listbox(root, width=80, height=20)
 listbox.pack(pady=20)
 
+
+button_merge = tk.Button(root, text="Merge PDFs", command=merge_pdfs)
+button_merge.config(width=20, height=2)
+button_merge.pack(pady=20)
+
 def update_listbox():
     listbox.delete(0, tk.END)
     for idx, pdf in enumerate(PDF.pdfs):
@@ -81,6 +91,8 @@ def delete_pdf(index):
     update_listbox()
 
 button_open.config(command=lambda: [open_pdf(), update_listbox()])
+
+
 
 root.geometry("800x600")
 
